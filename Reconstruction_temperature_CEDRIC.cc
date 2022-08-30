@@ -22,14 +22,14 @@ void Reconstruction_temperature_CEDRIC()
 
   cout << "Enter the number of PSL/mm² in IP number 5 :" << endl;
   cin >> IP[4];
-  
+
   cout << "Enter the number of PSL/mm² in IP number 6 :" << endl;
   cin >> IP[5];
-  
+
   cout << "Enter the number of PSL/mm² in IP number 7 :" << endl;
   cin >> IP[6];
 
-  
+
   DefineMatrice(Coef_PSL);
   DefineMatriceHP(Coef_PSL);
 
@@ -65,8 +65,8 @@ void Reconstruction_temperature_CEDRIC()
   pad2->cd();
   pad2->SetLogy();
   Draw_Incident_Gamma_Spectrum_Fit(A, E0);
-  
 
-  
+
+
 
 }

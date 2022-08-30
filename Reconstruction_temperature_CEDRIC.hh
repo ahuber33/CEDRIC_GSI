@@ -32,7 +32,7 @@ void Create_Pad_Canvas()
   c->SetWindowPosition(600, 0);
   pad1 = new TPad("pad1", "", 0.0, 0.0, 0.5, 1);
   pad2 = new TPad("pad2", "", 0.51, 0.0, 1, 1);
-  
+
   pad1->Draw();
   pad2->Draw();
 
@@ -119,7 +119,7 @@ void Calcul_Chi2(TH1D* O, TH1D* C)
   for (int i=1; i<=n; i++)
     {
       sigma = C->GetBinError(i);
-      
+
       if(C->GetBinContent(i) !=0 && sigma !=0)
 	{
 	  Chi2+= ((O->GetBinContent(i) - C->GetBinContent(i)) * (O->GetBinContent(i) - C->GetBinContent(i))) / (C->GetBinContent(i) + (sigma*sigma));
@@ -142,7 +142,7 @@ Double_t fitFuncHP(float x, Double_t* par)
 {
   Double_t PDF =0.0;
   PDF = exp(par[0]-(x/10)/par[1]);
-  
+
   return PDF;
 }
 
@@ -151,7 +151,7 @@ Double_t fitFuncHP(float x, Double_t* par)
 void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
 {
   PSL_Rec->Reset();
-  
+
   for (int i=1; i<=200; i++)
     {
       for (int j=1; j<=7; j++)
@@ -168,7 +168,7 @@ void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
 void fcnHP(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
 {
   PSL_Rec->Reset();
-  
+
   for (int i=1; i<=100; i++)
     {
       for (int j=1; j<=7; j++)
@@ -186,28 +186,28 @@ void fcnHP(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
 void FIT_MINUIT(float start_0, float step_0, float low_0, float up_0, float start_1, float step_1, float low_1, float up_1, bool HP)
 {
   gStyle->SetOptStat(0);
-  
+
   TMinuit *gMinuit = new TMinuit(2);  //initialize TMinuit with a maximum of 4 params
   if (HP == false)gMinuit->SetFCN(fcn);
   if (HP == true)gMinuit->SetFCN(fcnHP);
 
   Double_t arglist[10];
   Int_t ierflg = 0;
-  
+
   arglist[0] = 1;
   gMinuit->mnexcm("SET ERR", arglist ,1,ierflg);
-  
+
   // Set starting values and step sizes for parameters
   gMinuit->mnparm(0, "A", start_0, step_0, low_0, up_0, ierflg);
   gMinuit->mnparm(1, "E0", start_1, step_1, low_1, up_1, ierflg);
-  
+
   // Now ready for minimization step
   arglist[0] = 500;
   arglist[1] = 1.;
 
   //  gMinuit->mnexcm("CALL FCN", arglist ,1,ierflg);
   gMinuit->mnexcm("MIGRAD", arglist ,2,ierflg);
-  
+
   // Print results
   Double_t amin,edm,errdef;
   Int_t nvpar,nparx,icstat;
