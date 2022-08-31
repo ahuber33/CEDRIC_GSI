@@ -42,4 +42,4 @@
 
 # Commit #2 [CEDRIC_GSI.0.0.1]
 # - Pour le calcul permettant de ramener l'énergie déposée effective en énergie déposée effective par mm², le calcul de la surface effective des IPs de la simulation utilise désormais la vraie valeur de Pi au lieu d'une approximation
-# - MAJ des fichiers ROOT afin de prendre en compte la surface effective du cylindre par rapport à la surface défini lors du tir avec un angle de 0.09 rad.
+# - MAJ des fichiers ROOT afin de prendre en compte la surface effective du cylindre par rapport à la surface définie lors du tir avec un angle de 0.09 rad.
