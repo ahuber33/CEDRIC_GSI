@@ -64,14 +64,14 @@ void DefineMatrice(double coef_PSL)
 {
   TFile* f_Matrice = new TFile("CEDRIC_Matrice_gamma.root");
   Matrice = (TH2F*)f_Matrice->Get("matrice");
-  Matrice->Scale(Coef_PSL/(3.1415927*7*7));
+  Matrice->Scale(Coef_PSL/(TMath::Pi()*7*7));
 }
 
 void DefineMatriceHP(double coef_PSL)
 {
   TFile* f_MatriceHP = new TFile("CEDRIC_MatriceHP_gamma.root");
   MatriceHP = (TH2F*)f_MatriceHP->Get("matriceHP");
-  MatriceHP->Scale(Coef_PSL/(3.1415927*7*7));
+  MatriceHP->Scale(Coef_PSL/(TMath::Pi()*7*7));
 }
 
 

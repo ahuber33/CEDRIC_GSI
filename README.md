@@ -1,5 +1,5 @@
-# CEDRIC_GSI analysis code for determination of temperature paramter from gamma spectrum incident on CEDRIC spectrometer.
-#[huber@ecnbg.in2p3.fr, huberarnaud@gmail.com]
+# CEDRIC_GSI analysis code for determination of temperature parameter from gamma spectrum incident on CEDRIC spectrometer.
+#[huber@cenbg.in2p3.fr, huberarnaud@gmail.com]
 
 # HOW TO USE THE ANALYSE CODE ?
 
@@ -36,6 +36,10 @@
 
 # BACKUP FROM OLD Versions
 # Commit #1 [CEDRIC_GSI.0.0.0]
-# Code from debug version (creation of Matrix at start) present in ENLCEDRICSim folder
-# Matrice et MatriceHP are coming from this code. In this present code, we will only use the ROOT file containing the Matrix
-# If E0 from fit is < 2 MeV, a second fit is apply with the MatriceHP. The process is automatic.
+# - Code from debug version (creation of Matrix at start) present in ENLCEDRICSim folder
+# - Matrice et MatriceHP are coming from this code. In this present code, we will only use the ROOT file containing the Matrix
+# - If E0 from fit is < 2 MeV, a second fit is apply with the MatriceHP. The process is automatic.
+
+# Commit #2 [CEDRIC_GSI.0.0.1]
+# - Pour le calcul permettant de ramener l'énergie déposée effective en énergie déposée effective par mm², le calcul de la surface effective des IPs de la simulation utilise désormais la vraie valeur de Pi au lieu d'une approximation
+# - MAJ des fichiers ROOT afin de prendre en compte la surface effective du cylindre par rapport à la surface défini lors du tir avec un angle de 0.09 rad.
