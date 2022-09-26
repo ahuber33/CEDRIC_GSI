@@ -16,12 +16,16 @@ double E0=0;
 double err_E0=0;
 double NEvents=0;
 double Coef_PSL = 6.95E-1;
+int flag_electron = 0;
 bool HP=false;
 float IP[7];
 TPad *pad1;
 TPad *pad2;
 TCanvas* c;
 TF1* f1;
+float Chi2_store=0;
+float Chi2_HP_store=0;
+float Chi2_HPbis_store=0;
 
 
 
@@ -42,9 +46,9 @@ void Create_Pad_Canvas()
 void Init_IP()
 {
   for (int i=0; i<7; i++)
-    {
-      IP[i] =0;
-    }
+  {
+    IP[i] =0;
+  }
 }
 
 
@@ -75,6 +79,21 @@ void DefineMatriceHP(double coef_PSL)
 }
 
 
+void DefineMatriceElectron(double coef_PSL)
+{
+  TFile* f_Matrice = new TFile("CEDRIC_Matrice_electron.root");
+  Matrice = (TH2F*)f_Matrice->Get("matrice");
+  Matrice->Scale(Coef_PSL/(TMath::Pi()*7*7));
+}
+
+void DefineMatriceHPElectron(double coef_PSL)
+{
+  TFile* f_MatriceHP = new TFile("CEDRIC_MatriceHP_electron.root");
+  MatriceHP = (TH2F*)f_MatriceHP->Get("matriceHP");
+  MatriceHP->Scale(Coef_PSL/(TMath::Pi()*7*7));
+}
+
+
 
 TH1D* Histo_PSL(const char* filename)
 {
@@ -90,13 +109,13 @@ TH1D* Histo_PSL(const char* filename)
   double Error_PSL=0;
   double Coef_PSL = 6.95E-1;
 
-   for (int i=1; i<=n; i++)
-     {
-       Error_Edep = sqrt((Edep_REF->Integral(i,i)*Integral)/NEvents); //si graph Edep
-       Error_PSL = Error_Edep*Coef_PSL; // si graph PSL
-       Edep_REF->SetBinError(i, Error_Edep);
-       PSL_REF->SetBinError(i, Error_PSL);
-     }
+  for (int i=1; i<=n; i++)
+  {
+    Error_Edep = sqrt((Edep_REF->Integral(i,i)*Integral)/NEvents); //si graph Edep
+    Error_PSL = Error_Edep*Coef_PSL; // si graph PSL
+    Edep_REF->SetBinError(i, Error_Edep);
+    PSL_REF->SetBinError(i, Error_PSL);
+  }
 
 
   PSL_REF->SetDirectory(nullptr);
@@ -117,15 +136,15 @@ void Calcul_Chi2(TH1D* O, TH1D* C)
   float sigma=0;
 
   for (int i=1; i<=n; i++)
+  {
+    sigma = C->GetBinError(i);
+
+    if(C->GetBinContent(i) !=0 && sigma !=0)
     {
-      sigma = C->GetBinError(i);
+      Chi2+= ((O->GetBinContent(i) - C->GetBinContent(i)) * (O->GetBinContent(i) - C->GetBinContent(i))) / (C->GetBinContent(i) + (sigma*sigma));
 
-      if(C->GetBinContent(i) !=0 && sigma !=0)
-	{
-	  Chi2+= ((O->GetBinContent(i) - C->GetBinContent(i)) * (O->GetBinContent(i) - C->GetBinContent(i))) / (C->GetBinContent(i) + (sigma*sigma));
-
-	}
     }
+  }
 }
 
 
@@ -153,12 +172,12 @@ void fcn(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
   PSL_Rec->Reset();
 
   for (int i=1; i<=200; i++)
+  {
+    for (int j=1; j<=7; j++)
     {
-      for (int j=1; j<=7; j++)
-	{
-	  PSL_Rec->SetBinContent(j, PSL_Rec->GetBinContent(j) + fitFunc(i-0.5, par)*Matrice->GetBinContent(j, i));
-	}
+      PSL_Rec->SetBinContent(j, PSL_Rec->GetBinContent(j) + fitFunc(i-0.5, par)*Matrice->GetBinContent(j, i));
     }
+  }
 
   Calcul_Chi2(PSL_Rec, Data);
   f = Chi2;
@@ -170,12 +189,12 @@ void fcnHP(Int_t &npar, Double_t *gin, Double_t &f, Double_t *par, Int_t iflag)
   PSL_Rec->Reset();
 
   for (int i=1; i<=100; i++)
+  {
+    for (int j=1; j<=7; j++)
     {
-      for (int j=1; j<=7; j++)
-	{
-	  PSL_Rec->SetBinContent(j, PSL_Rec->GetBinContent(j) + fitFuncHP(i-0.5, par)*MatriceHP->GetBinContent(j, i));
-	}
+      PSL_Rec->SetBinContent(j, PSL_Rec->GetBinContent(j) + fitFuncHP(i-0.5, par)*MatriceHP->GetBinContent(j, i));
     }
+  }
 
   Calcul_Chi2(PSL_Rec, Data);
   f = Chi2;
@@ -243,20 +262,32 @@ void FIT_MINUIT(float start_0, float step_0, float low_0, float up_0, float star
   cout << "#######################################################" << endl;
   cout << "\nN0 = " << exp(A) << " +- " << exp(A+err_A)-exp(A) << endl;
   cout << "E0 = " << E0 << " +- " << err_E0 << " MeV" <<  endl;
+  cout << "Chi2 = " << Chi2 << endl;
   cout << "\n\n" << endl;
 }
 
 
+void Programme_Test()
+{
+  IP[0] = 2000;
+  IP[1] = 2400;
+  IP[2] = 2100;
+  IP[3] = 1600;
+  IP[4] = 1200;
+  IP[5] = 900;
+  IP[6] = 100;
+}
+
 void Histo_DATA(float IP[])
 {
   for (int i=0; i<7; i++)
-    {
-      Data->SetBinContent(i+1, IP[i]);
-    }
+  {
+    Data->SetBinContent(i+1, IP[i]);
+  }
 }
 
 
-void Draw_Incident_Gamma_Spectrum_Fit(float A, float E)
+void Draw_Incident_Spectrum_Fit(float A, float E, int flag)
 {
   f1 = new TF1("f1", "exp([0]-x/[1])", 0, 200);
   f1->SetParameter(0, A);
@@ -292,8 +323,15 @@ void Draw_Incident_Gamma_Spectrum_Fit(float A, float E)
   leE->SetTextSize(0.04);
   leE->SetTextColor(kRed);
 
+  string sChi = Form("Chi2 =  %g ", Chi2);
+  TLatex *lChi = new TLatex(30,0.001*Max, sChi.c_str());
+  lChi->Draw();
+  lChi->SetTextSize(0.04);
+  lChi->SetTextColor(kRed);
+
   f1->GetYaxis()->SetTitle("N");
-  f1->GetXaxis()->SetTitle("#gamma incident energy on CEDRIC [MeV]");
+  if (flag==0) f1->GetXaxis()->SetTitle("#gamma incident energy on CEDRIC [MeV]");
+  if (flag==1) f1->GetXaxis()->SetTitle("electron incident energy on CEDRIC [MeV]");
 
 
 }

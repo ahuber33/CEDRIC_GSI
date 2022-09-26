@@ -14,20 +14,23 @@
 # root -l Reconstruction_temperature_CEDRIC.cc
 
 # At this time, the code will ask you in order :
-# 1/ What is the PSL coef for the scanner used
-# 2/ What is the number of PSL/mm² in IP number 1
-# 3/ What is the number of PSL/mm² in IP number 2
-# 4/ What is the number of PSL/mm² in IP number 3
-# 5/ What is the number of PSL/mm² in IP number 4
-# 6/ What is the number of PSL/mm² in IP number 5
-# 7/ What is the number of PSL/mm² in IP number 6
-# 8/ What is the number of PSL/mm² in IP number 7
+# 1/ Measurement was done with electrons or only with gammas ?
+# 2/ What is the PSL coef for the scanner used
+# 3/ What is the number of PSL/mm² in IP number 1
+# 4/ What is the number of PSL/mm² in IP number 2
+# 5/ What is the number of PSL/mm² in IP number 3
+# 6/ What is the number of PSL/mm² in IP number 4
+# 7/ What is the number of PSL/mm² in IP number 5
+# 8/ What is the number of PSL/mm² in IP number 6
+# 9/ What is the number of PSL/mm² in IP number 7
 
 # After that, all is automatic, the code will fit the DATA PSL DISTRIBUTIONS in order to output 2 parameters :
-# 1/ N0 = Maximum number of gammas emitted from an exponential law
+# 1/ N0 = Maximum number of gammas/electrons emitted from an exponential law
 # 2/ E0 = Temperature from the exponential law
 
 # A canvas will appear with a comparison between the DATA PSL DISTRIBUTION and this one reconstructed from the FIT with the Matrix and an illustration of the exponential law.
+
+# If you want just to see an example, please enter a number >1 when the code ask you if the measurement was done with electrons or only with gammas. You will have an example of output !!!
 
 
 
@@ -43,3 +46,8 @@
 # Commit #2 [CEDRIC_GSI.0.0.1]
 # - Pour le calcul permettant de ramener l'énergie déposée effective en énergie déposée effective par mm², le calcul de la surface effective des IPs de la simulation utilise désormais la vraie valeur de Pi au lieu d'une approximation
 # - MAJ des fichiers ROOT afin de prendre en compte la surface effective du cylindre par rapport à la surface définie lors du tir avec un angle de 0.09 rad.
+
+# Commit #3 [CEDRIC_GSI.0.1.0] le 26/09/2022
+# - Ajout des matrices électrons général et HP
+# - Modifications dans le code pour prendre en compte ces deux aspects. Question en début de programme pour savoir si on utilise les matrices électrons ou gammas.
+# - Si mesures avec électrons, le programme effectue 3 fits différents (générale, HP large et HP avec bornes rétrecies à basses énergies) car il a été démontrée que cela permettait d'avoir un spectre correct sur l'ensemble de la gamme en énergie. A suivre avec des données réelles !!!!
