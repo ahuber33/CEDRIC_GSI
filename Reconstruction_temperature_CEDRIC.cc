@@ -2,111 +2,58 @@
 
 void Reconstruction_temperature_CEDRIC()
 {
-  Init_IP();
-  cout << "\n\n1/ Measurement with electrons [1] or only with gammas [0] ?" << endl;
-  cin >> flag_electron;
-  if(flag_electron ==0) cout << "Measurement only with gammas !!!!" << endl;
-  if(flag_electron ==1) cout << "Measurement with electrons !!!!" << endl;
-  if(flag_electron >1) Programme_Test();
 
-  if(flag_electron <=1)
-  {
-    cout << "\n\n2/ Enter the PSL coefficient [PSL/MeV] (default is 6.95E-1) :" << endl;
-    cin >> Coef_PSL;
-    cout << "PSL Coef = " << Coef_PSL << endl;
+  float Calib_PSL = 0.695;
+  float solid_angle1 = 0.0218;
+  float solid_angle2 = 0.00815;
 
-    cout << "\n\nEnter the number of PSL/mm² in IP number 1 :" << endl;
-    cin >> IP[0];
+  //SHOT GSI
 
-    cout << "Enter the number of PSL/mm² in IP number 2 :" << endl;
-    cin >> IP[1];
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_1_A.txt", "Mesures_Shot_1_A", Calib_PSL, solid_angle1);
+  
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_648_A.txt", "Mesures_Shot_648_A", Calib_PSL, solid_angle1);
 
-    cout << "Enter the number of PSL/mm² in IP number 3 :" << endl;
-    cin >> IP[2];
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_649_A.txt", "Mesures_Shot_649_A", Calib_PSL, solid_angle1);
 
-    cout << "Enter the number of PSL/mm² in IP number 4 :" << endl;
-    cin >> IP[3];
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_650_A.txt", "Mesures_Shot_650_A", Calib_PSL, solid_angle1);
 
-    cout << "Enter the number of PSL/mm² in IP number 5 :" << endl;
-    cin >> IP[4];
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_655_A.txt", "Mesures_Shot_655_A", Calib_PSL, solid_angle1);
 
-    cout << "Enter the number of PSL/mm² in IP number 6 :" << endl;
-    cin >> IP[5];
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_657_A.txt", "Mesures_Shot_657_A", Calib_PSL, solid_angle1);
 
-    cout << "Enter the number of PSL/mm² in IP number 7 :" << endl;
-    cin >> IP[6];
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_659_A.txt", "Mesures_Shot_659_A", Calib_PSL, solid_angle1);
 
-  }
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_663_A.txt", "Mesures_Shot_663_A", Calib_PSL, solid_angle1);
 
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_667_A.txt", "Mesures_Shot_667_A", Calib_PSL, solid_angle1);
 
-  if(flag_electron==0 || flag_electron >1)
-  {
-    DefineMatrice(Coef_PSL);
-    DefineMatriceHP(Coef_PSL);
-  }
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_671_A.txt", "Mesures_Shot_671_A", Calib_PSL, solid_angle1);
 
-  if(flag_electron==1)
-  {
-    DefineMatriceElectron(Coef_PSL);
-    DefineMatriceHPElectron(Coef_PSL);
-  }
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_674_A.txt", "Mesures_Shot_674_A", Calib_PSL, solid_angle1);
 
-  new TCanvas;
-  MatriceHP->Draw("colz");
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_677_A.txt", "Mesures_Shot_677_A", Calib_PSL, solid_angle1);
 
-  new TCanvas;
-  Matrice->Draw("colz");
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_678_A.txt", "Mesures_Shot_678_A", Calib_PSL, solid_angle1);
+
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_684_A.txt", "Mesures_Shot_684_A", Calib_PSL, solid_angle1);
+
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_687_A.txt", "Mesures_Shot_687_A", Calib_PSL, solid_angle1);
+
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_688_A.txt", "Mesures_Shot_688_A", Calib_PSL, solid_angle1);
+
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_698_A.txt", "Mesures_Shot_698_A", Calib_PSL, solid_angle1);
+
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_700_A.txt", "Mesures_Shot_700_A", Calib_PSL, solid_angle1);
+
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_702_A.txt", "Mesures_Shot_702_A", Calib_PSL, solid_angle1);
+
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_703_A.txt", "Mesures_Shot_703_A", Calib_PSL, solid_angle1);
+
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_704_A.txt", "Mesures_Shot_704_A", Calib_PSL, solid_angle2);
+
+  Routine_Analyse("Analyses_MultiGauge/Mesures_Shot_707_A.txt", "Mesures_Shot_707_A", Calib_PSL, solid_angle2);
 
 
-  float start_0 = 10;
-  float step_0 = 0.1;
-  float low_0 = 1;
-  float up_0 = 100;
-
-  float start_1 = 10;//10
-  float step_1 = 0.1;
-  float low_1 = 0; //-1
-  float up_1 = 30; //30
-
-
-
-  Create_Pad_Canvas();
-  Histo_DATA(IP);
-  pad1->cd();
-  if(flag_electron==0 || flag_electron >1)
-  {
-    FIT_MINUIT(start_0, step_0, low_0, up_0, start_1, step_1, low_1, up_1, HP);
-    if (E0 <=2)
-    {
-      HP=true;
-      FIT_MINUIT(start_0, step_0, low_0, up_0, start_1, step_1, low_1, up_1, HP);
-    }
-  }
-
-  if(flag_electron==1)
-  {
-    FIT_MINUIT(start_0, step_0, low_0, up_0, start_1, step_1, low_1, up_1, HP);
-    Chi2_store=Chi2;
-    HP=true;
-    FIT_MINUIT(start_0, step_0, low_0, up_0, start_1, step_1, low_1, up_1, HP);
-    Chi2_HP_store=Chi2;
-    FIT_MINUIT(start_0, step_0, low_0, up_0, 0.5, step_1, low_1, 1., HP);
-    Chi2_HPbis_store=Chi2;
-
-    if(Chi2_store < Chi2_HP_store && Chi2_store < Chi2_HPbis_store)
-    {
-      HP=false;
-      FIT_MINUIT(start_0, step_0, low_0, up_0, start_1, step_1, low_1, up_1, HP);
-    }
-    if(Chi2_HP_store < Chi2_store && Chi2_HP_store < Chi2_HPbis_store) FIT_MINUIT(start_0, step_0, low_0, up_0, start_1, step_1, low_1, up_1, HP);
-    if(Chi2_HPbis_store < Chi2_store && Chi2_HPbis_store < Chi2_HP_store) FIT_MINUIT(start_0, step_0, low_0, up_0, 0.5, step_1, low_1, 1.5, HP);
-  }
-  pad2->cd();
-  pad2->SetLogy();
-  Draw_Incident_Spectrum_Fit(A, E0, flag_electron);
-
-
-
-
+  //SHOT ELFIE
 
 }

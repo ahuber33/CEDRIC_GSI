@@ -51,3 +51,7 @@
 # - Ajout des matrices électrons général et HP
 # - Modifications dans le code pour prendre en compte ces deux aspects. Question en début de programme pour savoir si on utilise les matrices électrons ou gammas.
 # - Si mesures avec électrons, le programme effectue 3 fits différents (générale, HP large et HP avec bornes rétrecies à basses énergies) car il a été démontrée que cela permettait d'avoir un spectre correct sur l'ensemble de la gamme en énergie. A suivre avec des données réelles !!!!
+
+#Commit #4 [CEDRIC_GSI.0.2.0] le 20/01/2023
+# - Modifications du code pour le rendre automatique à partir des fichiers d'analyses de multigauge. Il suffit de rentrer les noms de fichiers et de lancer le code qui va analyser et sortir les résultats sous forme de .png
+# - Corrections de quelques bugs concernant l'utilisation des matrices et la normalisation pour connaitre le nombre de particules totales émises pendant un tir.
