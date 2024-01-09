@@ -34,7 +34,7 @@ float Chi2_HPbis_store=0;
 double N=0;
 double eN=0;
 float solid_angle=0;
-
+double Surface =0;
 
 
 void Create_Pad_Canvas(const char* name)
@@ -72,33 +72,33 @@ double NumberOfEntries(const char* filename)
 }
 
 
-void DefineMatrice(double coef_PSL)
+void DefineMatrice(double coef_PSL, double Surface)
 {
   TFile* f_Matrice = new TFile("CEDRIC_Matrice_gamma.root");
   Matrice = (TH2F*)f_Matrice->Get("matrice");
-  Matrice->Scale(Coef_PSL/(TMath::Pi()*7*7));
+  Matrice->Scale(Coef_PSL/Surface);
 }
 
-void DefineMatriceHP(double coef_PSL)
+void DefineMatriceHP(double coef_PSL, double Surface)
 {
   TFile* f_MatriceHP = new TFile("CEDRIC_MatriceHP_gamma.root");
   MatriceHP = (TH2F*)f_MatriceHP->Get("matriceHP");
-  MatriceHP->Scale(Coef_PSL/(TMath::Pi()*7*7));
+  MatriceHP->Scale(Coef_PSL/Surface);
 }
 
 
-void DefineMatriceElectron(double coef_PSL)
+void DefineMatriceElectron(double coef_PSL, double Surface)
 {
   TFile* f_Matrice = new TFile("CEDRIC_Matrice_electron.root");
   Matrice = (TH2F*)f_Matrice->Get("matrice");
-  Matrice->Scale(Coef_PSL/(TMath::Pi()*7*7));
+  Matrice->Scale(Coef_PSL/Surface);
 }
 
-void DefineMatriceHPElectron(double coef_PSL)
+void DefineMatriceHPElectron(double coef_PSL, double Surface)
 {
   TFile* f_MatriceHP = new TFile("CEDRIC_MatriceHP_electron.root");
   MatriceHP = (TH2F*)f_MatriceHP->Get("matriceHP");
-  MatriceHP->Scale(Coef_PSL/(TMath::Pi()*7*7));
+  MatriceHP->Scale(Coef_PSL/Surface);
 }
 
 
@@ -294,12 +294,15 @@ void FIT_MINUIT_G(float start_0, float step_0, float low_0, float up_0, float st
   Double_t arglist[10];
   Int_t ierflg = 0;
 
-  gMinuit->SetPrintLevel(-1);
+  //gMinuit->SetPrintLevel(-1);
   gMinuit->mnexcm("SET ERR", arglist ,1,ierflg);
 
   // Set starting values and step sizes for parameters
   gMinuit->mnparm(0, "A", start_0, step_0, low_0, up_0, ierflg);
   gMinuit->mnparm(1, "E0", start_1, step_1, low_1, up_1, ierflg);
+
+  //gMinuit->FixParameter(0);
+  //gMinuit->FixParameter(1);
 
   // Now ready for minimization step
   arglist[0] = 500;
@@ -356,13 +359,13 @@ void FIT_MINUIT_G(float start_0, float step_0, float low_0, float up_0, float st
 
 void Programme_Test()
 {
-  IP[0] = 2000;
-  IP[1] = 2400;
-  IP[2] = 2100;
-  IP[3] = 1600;
-  IP[4] = 1200;
-  IP[5] = 900;
-  IP[6] = 100;
+  IP[0] = 1374.23;
+  IP[1] = 1242.29;
+  IP[2] = 1047.96;
+  IP[3] = 767.745;
+  IP[4] = 565.226;
+  IP[5] = 414.813;
+  IP[6] = 144.842;
 
   cout << "Test program with gammas" << endl;
 }
@@ -410,7 +413,7 @@ void Draw_Incident_Spectrum_Fit(float A, float E, float solid_angle, int flag)
     {
       seN = Form("+-  %g #gamma/(MeV.sr)", err_A);
       seNN = Form("+-  %g #gamma/sr", eN);
-      cout << "N gammas [ >10MeV] = " << f1->Integral(10,200) << endl;
+      cout << "N gammas [ >10MeV] = " << f1->Integral(10,200) << " +- " << f1->Integral(10,200)*(err_E0/E0+err_A/A) <<  endl;
     }
   
   
@@ -486,12 +489,13 @@ void Lecture_analyse_file(const char* filename)
 
 
 
-void Routine_Analyse(const char* filename, const char* name, float Coef_PSL, float solid_angle)
+void Routine_Analyse(const char* filename, const char* name, float Coef_PSL, float solid_angle, double Surface)
 {
   
   cout << "\n\nfilename = " << filename << endl;
   cout << "PSL Coef = " << Coef_PSL << endl;
   cout << "Solid angle = " << solid_angle << endl;
+  cout << "Surface = " << Surface << endl;
 
   Init_IP();
   Lecture_analyse_file(filename);
@@ -533,10 +537,10 @@ void Routine_Analyse(const char* filename, const char* name, float Coef_PSL, flo
     // //}
 
 
-  float start_0 = 1e11;
-  float step_0 = 1e10;
-  float low_0 = 1e9;
-  float up_0 = 1e17;
+  float start_0 = 1e9;
+  float step_0 = 1e8;
+  float low_0 = 1e6;
+  float up_0 = 1e15;
   
   float start_1 = 10;//10
   float step_1 = 0.1;
@@ -545,8 +549,8 @@ void Routine_Analyse(const char* filename, const char* name, float Coef_PSL, flo
 
   //MATRICE GAMMA PART
 
-  DefineMatrice(Coef_PSL);
-  DefineMatriceHP(Coef_PSL);
+  DefineMatrice(Coef_PSL, Surface);
+  DefineMatriceHP(Coef_PSL, Surface);
 
   Create_Pad_Canvas("RESULTS GAMMA");
   Histo_DATA(IP);
@@ -580,8 +584,8 @@ void Routine_Analyse(const char* filename, const char* name, float Coef_PSL, flo
   Create_Pad_Canvas("RESULTS ELECTRONS");
   pad1->cd();
   pad1->SetLogy();
-  DefineMatriceElectron(Coef_PSL);
-  DefineMatriceHPElectron(Coef_PSL);
+  DefineMatriceElectron(Coef_PSL, Surface);
+  DefineMatriceHPElectron(Coef_PSL, Surface);
 
   HP=false;
   FIT_MINUIT_E(start_0, step_0, low_0, up_0, start_1, step_1, low_1, up_1, HP);
@@ -613,13 +617,144 @@ void Routine_Analyse(const char* filename, const char* name, float Coef_PSL, flo
   c->SaveAs(pngname2.c_str());
   
 
-  // cout << "\nGAMMA RESULTS : " << endl;
-  // cout << "Chi2 gen = " << Chi2_gamma_store << endl;
-  // cout << "Chi2 HP = " << Chi2_gamma_HP_store << endl;
+  cout << "\nGAMMA RESULTS : " << endl;
+  cout << "Chi2 gen = " << Chi2_gamma_store << endl;
+  cout << "Chi2 HP = " << Chi2_gamma_HP_store << endl;
 
-  // cout << "\nELECTRONS RESULTS : " << endl;
-  // cout << "Chi2 gen = " << Chi2_store << endl;
-  // cout << "Chi2 HP = " << Chi2_HP_store << endl;
-  // cout << "Chi2 HP réduit = " << Chi2_HPbis_store << endl;
+  cout << "\nELECTRONS RESULTS : " << endl;
+  cout << "Chi2 gen = " << Chi2_store << endl;
+  cout << "Chi2 HP = " << Chi2_HP_store << endl;
+  cout << "Chi2 HP réduit = " << Chi2_HPbis_store << endl;
+
+}
+
+
+
+
+
+
+
+
+
+
+void Analyse()
+{
+
+  Init_IP();
+  
+  // cout << "\n\n1/ Measurement with electrons [1] or only with gammas [0] ?" << endl;
+  // cin >> flag_electron;
+  // if(flag_electron ==0) cout << "Measurement only with gammas !!!!" << endl;
+  // if(flag_electron ==1) cout << "Measurement with electrons !!!!" << endl;
+  // if(flag_electron >1)
+
+  
+  // if(flag_electron <=1)
+  //   {
+    cout << "\n\n2/ Enter the PSL coefficient [PSL/MeV] (default is 6.95E-1) :" << endl;
+    cin >> Coef_PSL;
+
+    cout << "\n\nEnter the solid angle :" << endl;
+    cin >> solid_angle;
+
+    //Programme_Test();
+
+    cout << "Enter the number of PSL/mm² in IP number 1 :" << endl;
+    cin >> IP[0];
+
+    cout << "Enter the number of PSL/mm² in IP number 2 :" << endl;
+    cin >> IP[1];
+
+    cout << "Enter the number of PSL/mm² in IP number 3 :" << endl;
+    cin >> IP[2];
+
+    cout << "Enter the number of PSL/mm² in IP number 4 :" << endl;
+    cin >> IP[3];
+
+    cout << "Enter the number of PSL/mm² in IP number 5 :" << endl;
+    cin >> IP[4];
+
+    cout << "Enter the number of PSL/mm² in IP number 6 :" << endl;
+    cin >> IP[5];
+
+    cout << "Enter the number of PSL/mm² in IP number 7 :" << endl;
+    cin >> IP[6];
+
+    //  }
+
+
+  float start_0 = 1e8;
+  float step_0 = 1e7;
+  float low_0 = 1e6;
+  float up_0 = 1e13;
+  
+  float start_1 = 10;//10
+  float step_1 = 0.1;
+  float low_1 = 0; //-1
+  float up_1 = 30; //30
+
+  //MATRICE GAMMA PART
+
+  DefineMatrice(Coef_PSL, Surface);
+  DefineMatriceHP(Coef_PSL, Surface);
+
+  Create_Pad_Canvas("RESULTS GAMMA");
+  Histo_DATA(IP);
+  pad1->cd();
+  pad1->SetLogy();
+  FIT_MINUIT_G(start_0, step_0, low_0, up_0, start_1, step_1, low_1, up_1, HP);
+  Chi2_gamma_store=Chi2;
+  if (E0 <=1.5)
+    {
+      HP=true;
+      FIT_MINUIT_G(start_0, step_0, low_0, up_0, start_1, step_1, low_1, up_1, HP);
+      Chi2_gamma_HP_store=Chi2;
+    }
+
+  pad2->cd();
+  pad2->SetLogy();
+  Draw_Incident_Spectrum_Fit(A, E0, solid_angle, 1);
+
+
+  //ELECTRONS GAMMA PART
+
+  Create_Pad_Canvas("RESULTS ELECTRONS");
+  pad1->cd();
+  pad1->SetLogy();
+  DefineMatriceElectron(Coef_PSL, Surface);
+  DefineMatriceHPElectron(Coef_PSL, Surface);
+
+  HP=false;
+  FIT_MINUIT_E(start_0, step_0, low_0, up_0, start_1, step_1, low_1, up_1, HP);
+  Chi2_store=Chi2;
+  HP=true;
+  FIT_MINUIT_E(start_0, step_0, low_0, up_0, start_1, step_1, low_1, up_1, HP);
+  Chi2_HP_store=Chi2;
+  FIT_MINUIT_E(start_0, step_0, low_0, up_0, 0.5, step_1, low_1, 1., HP);
+  Chi2_HPbis_store=Chi2;
+
+  if(Chi2_store < Chi2_HP_store && Chi2_store < Chi2_HPbis_store)
+    {
+      HP=false;
+      FIT_MINUIT_E(start_0, step_0, low_0, up_0, start_1, step_1, low_1, up_1, HP);
+    }
+  
+  if(Chi2_HP_store < Chi2_store && Chi2_HP_store < Chi2_HPbis_store) FIT_MINUIT_E(start_0, step_0, low_0, up_0, start_1, step_1, low_1, up_1, HP);
+  if(Chi2_HPbis_store < Chi2_store && Chi2_HPbis_store < Chi2_HP_store) FIT_MINUIT_E(start_0, step_0, low_0, up_0, 0.5, step_1, low_1, 1.5, HP);
+
+
+  pad2->cd();
+  pad2->SetLogy();
+  Draw_Incident_Spectrum_Fit(A, E0, solid_angle, 0);
+
+
+  cout << "\nGAMMA RESULTS : " << endl;
+  cout << "Chi2 gen = " << Chi2_gamma_store << endl;
+  cout << "Chi2 HP = " << Chi2_gamma_HP_store << endl;
+
+  cout << "\nELECTRONS RESULTS : " << endl;
+  cout << "Chi2 gen = " << Chi2_store << endl;
+  cout << "Chi2 HP = " << Chi2_HP_store << endl;
+  cout << "Chi2 HP réduit = " << Chi2_HPbis_store << endl;
 
 }
